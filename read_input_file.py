@@ -8,7 +8,8 @@ def read_input_file(input_file_path):
 	"A": [{	'name': <name>, 
 			'coords': [<y>, <x>], 
 			'orientation': <N or W or E or S>, 
-			'moves': <ex: 'AADADAGGA'>
+			'moves': <ex: 'AADADAGGA'>,
+			'treasures': <number of treasures collected>
 		  }]
 	}
 	"""
