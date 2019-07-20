@@ -136,7 +136,7 @@ class Map:
 		for treasureCoords, n in self.tresuresDict.items():
 			text += 'T - {0} - {1} - {2}\n'.format(treasureCoords[0], treasureCoords[1], n)
 		for adventurer in self.adventurersList:
-			text += 'A - {0} - {1} - {2} - {3} - {4}'.format(adventurer['name'], 
+			text += 'A - {0} - {1} - {2} - {3} - {4}\n'.format(adventurer['name'], 
 				adventurer['coords'][0], 
 				adventurer['coords'][1],
 				adventurer['orientation'],
