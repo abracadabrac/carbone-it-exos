@@ -157,7 +157,7 @@ class Map:
 
 if __name__ == "__main__":
 	input_file_path = "/Users/charles/Workspace/carbone-it-exos/entry_file.txt"
-	output_file_nmae = "output_file.txt"
+	output_file_name = "output_file.txt"
 	map = Map(input_file_path, output_file_nmae)
 	map.runGame()
 
