@@ -18,6 +18,7 @@ class Map:
 		self.treasuresList = elements["T"]
 		self.adventurersList = elements["A"]
 		self.nbSteps = np.max([len(adventurer["moves"]) for adventurer in self.adventurersList])
+		print(self._mapArray)
 
 
 	@property
@@ -47,33 +48,64 @@ class Map:
 	def runStep(self, numStep):
 		for adventurer in self.adventurersList:
 			if numStep < len(adventurer["moves"]):
-				coords0 = adventurer["coords"][:]
-				coords1 = coords0[:]
-				if adventurer["orientation"] == "S":
-					coords1[1] += 1
-				if adventurer["orientation"] == "N":
-					coords1[1] -= 1
-				if adventurer["orientation"] == "E":
-					coords1[0] += 1
-				if adventurer["orientation"] == "W":
-					coords1[0] -= 1
+				coords = adventurer["coords"][:]
+				orientation = adventurer["orientation"]
+				move =  adventurer["moves"][numStep]
+				print(move)
+				if move == "A":
+					if orientation == "S":
+						coords[1] += 1
+					elif orientation == "N":
+						coords[1] -= 1
+					elif orientation == "E":
+						coords[0] += 1
+					elif orientation == "W":
+						coords[0] -= 1
 
-				print(self._mapArray[coords1[1], coords1[0]])
-				if bool(re.search(self._mapArray[coords1[1], coords1[0]], r'[0123456789\.')):
-					# enter here if next step is not a mountain
-					adventurer["coords"] = coords1
 
+					if (coords[1] < self.dimensions[1]) & (coords[0] < self.dimensions[0]):
+						if bool(re.search(r'[\d\.]', self._mapArray[coords[1], coords[0]])):
+							# enter here if the next cell is aviable
+							if bool(re.search(r'\d', self._mapArray[coords[1], coords[0]])):
+								# enter here if adventurer reached a tresure
+								self.treasuresList.remove(coords)
+								adventurer["treasures"] += 1
+								
+							adventurer["coords"] = coords
+							
+
+
+				if move == "D":
+					if orientation == "S":
+						adventurer["orientation"] = "W"
+					elif orientation == "N":
+						adventurer["orientation"] = "E"
+					elif orientation == "E":
+						adventurer["orientation"] = "S"
+					elif orientation == "W":
+						adventurer["orientation"] = "N"
+
+				if move == "G":
+					if orientation == "S":
+						adventurer["orientation"] = "E"
+					elif orientation == "N":
+						adventurer["orientation"] = "W"
+					elif orientation == "E":
+						adventurer["orientation"] = "N"
+					elif orientation == "W":
+						adventurer["orientation"] = "S"
 
 	def runGame(self):
 		for numStep in range(self.nbSteps):
 			self.runStep(numStep)
+			print(self._mapArray)
+			print("nb treasures", self.adventurersList[0]["treasures"])
 
 
 
 if __name__ == "__main__":
 	input_file_path = "/Users/charles/Workspace/carbone-it-exos/entry_file.txt"
 	map = Map(input_file_path)
-	print(map._mapArray)
 
 	map.runGame()
-	print(map._mapArray)
+

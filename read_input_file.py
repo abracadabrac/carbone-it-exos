@@ -37,7 +37,8 @@ def read_input_file(input_file_path):
 					"name": elemData[0],
 					"coords": [int(e) for e in elemData[1:3]],
 					"orientation": elemData[3],
-					"moves": elemData[4]
+					"moves": elemData[4],
+					"treasures": 0
 				}
 			)
 
