@@ -4,11 +4,21 @@ import re
 
 
 class Map:
-	"""this class represent the map"""
-	def __init__(self, input_file_path):
+	"""this class represent the whole game and simulates its behaviour"""
+	def __init__(self, input_file_path, output_file_name):
 		"""
 		input 	input_file_path: path to the input file
 					ex: "/Users/charles/Workspace/carbone-it-exos/entry_file.txt"
+				output_file_name: the name given to the output file
+					ex: 'output_file.txt'
+
+		atributes	dimensions: in format [<y>, <x>]
+					mountainsList: in format [[<y0>, <x1>], ..., [<yi>, <xi>]]
+					adventurersList: in format [[<y0>, <x1>], ..., [<yi>, <xi>]], 	
+						-> coords are duplicated if multiple treasures are present on the same cell
+					nbSteps: total number of steps
+					mapArray representation of the map under a numpy array format
+					tresuresDict another representaion of treasures with the dimension
 					
 		"""
 		elements = read_input_file(input_file_path)
@@ -18,40 +28,59 @@ class Map:
 		self.treasuresList = elements["T"]
 		self.adventurersList = elements["A"]
 		self.nbSteps = np.max([len(adventurer["moves"]) for adventurer in self.adventurersList])
-		print(self._mapArray)
 
+		self.output_file_name = output_file_name
 
 	@property
-	def _mapArray(self):
+	def mapArray(self):
 		"""build the array's map representation into self.mapArray"""
-		mapArray = np.chararray((self.dimensions[1], self.dimensions[0]), unicode=True)
-		mapArray[:] = '.'
+		_mapArray = np.chararray((self.dimensions[1], self.dimensions[0]), unicode=True)
+		_mapArray[:] = '.'
 
 		for mountainCoord in self.mountainsList:
-			mapArray[mountainCoord[1], mountainCoord[0]] = "M"
+			_mapArray[mountainCoord[1], mountainCoord[0]] = "M"
 
 		for treasureCoord in self.treasuresList:
-			if mapArray[treasureCoord[1], treasureCoord[0]] == '.':
-				mapArray[treasureCoord[1], treasureCoord[0]] = 1
+			if _mapArray[treasureCoord[1], treasureCoord[0]] == '.':
+				_mapArray[treasureCoord[1], treasureCoord[0]] = 1
 			else: 
-				mapArray[treasureCoord[1], treasureCoord[0]] =\
-				 int(mapArray[treasureCoord[1], treasureCoord[0]]) + 1
+				_mapArray[treasureCoord[1], treasureCoord[0]] =\
+				 int(_mapArray[treasureCoord[1], treasureCoord[0]]) + 1
 
 		for adventurer in self.adventurersList:
 			adventurerCoords = adventurer["coords"]
 			adventurerName = adventurer["name"]
-			mapArray[adventurerCoords[1], adventurerCoords[0]] = adventurerName
+			_mapArray[adventurerCoords[1], adventurerCoords[0]] = adventurerName
 
-		return mapArray
+		return _mapArray
+
+
+	@property
+	def tresuresDict(self):
+		"""
+		representation of treasure under the following format
+		ex: {'03': 2, '13': 3} -> 2 treasures in [0, 3] and 3 treasures in [1, 3]
+		this is usful to build the output file
+		"""
+		_tresuresDict = {}
+		for treasure in self.treasuresList:
+			treasureStr = '{0}{1}'.format(treasure[0], treasure[1])
+			if treasureStr not in list(_tresuresDict.keys()):
+				_tresuresDict[treasureStr] = 1
+			else:
+				_tresuresDict[treasureStr] += 1
+
+		return _tresuresDict
+	
 
 
 	def runStep(self, numStep):
+		"""in a step each adventurers are moved one after anoter"""
 		for adventurer in self.adventurersList:
 			if numStep < len(adventurer["moves"]):
 				coords = adventurer["coords"][:]
 				orientation = adventurer["orientation"]
 				move =  adventurer["moves"][numStep]
-				print(move)
 				if move == "A":
 					if orientation == "S":
 						coords[1] += 1
@@ -64,9 +93,9 @@ class Map:
 
 
 					if (coords[1] < self.dimensions[1]) & (coords[0] < self.dimensions[0]):
-						if bool(re.search(r'[\d\.]', self._mapArray[coords[1], coords[0]])):
+						if bool(re.search(r'[\d\.]', self.mapArray[coords[1], coords[0]])):
 							# enter here if the next cell is aviable
-							if bool(re.search(r'\d', self._mapArray[coords[1], coords[0]])):
+							if bool(re.search(r'\d', self.mapArray[coords[1], coords[0]])):
 								# enter here if adventurer reached a tresure
 								self.treasuresList.remove(coords)
 								adventurer["treasures"] += 1
@@ -95,17 +124,40 @@ class Map:
 					elif orientation == "W":
 						adventurer["orientation"] = "S"
 
+
+	def write_exit_file(self):
+		"""
+		this function build the output file
+		"""
+		text = ''
+		text += 'C - {0} - {1}\n'.format(self.dimensions[0], self.dimensions[1])
+		for mountain in self.mountainsList:
+			text += 'M - {0} - {1}\n'.format(mountain[0], mountain[1])
+		for treasureCoords, n in self.tresuresDict.items():
+			text += 'T - {0} - {1} - {2}\n'.format(treasureCoords[0], treasureCoords[1], n)
+		for adventurer in self.adventurersList:
+			text += 'A - {0} - {1} - {2} - {3} - {4}'.format(adventurer['name'], 
+				adventurer['coords'][0], 
+				adventurer['coords'][1],
+				adventurer['orientation'],
+				adventurer['treasures'])
+
+		with open(self.output_file_name, 'w') as f:
+			f.write(text)
+
+
+
 	def runGame(self):
 		for numStep in range(self.nbSteps):
 			self.runStep(numStep)
-			print(self._mapArray)
-			print("nb treasures", self.adventurersList[0]["treasures"])
+		
+		self.write_exit_file()
 
 
 
 if __name__ == "__main__":
 	input_file_path = "/Users/charles/Workspace/carbone-it-exos/entry_file.txt"
-	map = Map(input_file_path)
-
+	output_file_nmae = "output_file.txt"
+	map = Map(input_file_path, output_file_nmae)
 	map.runGame()
 
