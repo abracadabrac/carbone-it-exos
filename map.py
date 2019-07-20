@@ -75,13 +75,15 @@ class Map:
 
 
 	def runStep(self, numStep):
-		"""in a step each adventurers are moved one after anoter"""
+		"""This function plays one round of the game"""
 		for adventurer in self.adventurersList:
+			# each adventurer are called one after another
 			if numStep < len(adventurer["moves"]):
 				coords = adventurer["coords"][:]
 				orientation = adventurer["orientation"]
 				move =  adventurer["moves"][numStep]
 				if move == "A":
+					#enter here if adventurer advances
 					if orientation == "S":
 						coords[1] += 1
 					elif orientation == "N":
@@ -93,18 +95,23 @@ class Map:
 
 
 					if (coords[1] < self.dimensions[1]) & (coords[0] < self.dimensions[0]):
+						#make sure the adventurer doesn't leave the map
 						if bool(re.search(r'[\d\.]', self.mapArray[coords[1], coords[0]])):
-							# enter here if the next cell is aviable
+							# enter here if the next cell is aviable (no mountain, no other adventurer)
 							if bool(re.search(r'\d', self.mapArray[coords[1], coords[0]])):
 								# enter here if adventurer reached a tresure
 								self.treasuresList.remove(coords)
+								# in this case we remove a corresponing treasure from the map
 								adventurer["treasures"] += 1
+								# and add it to the adventurer
 								
 							adventurer["coords"] = coords
+							# then we update the adventurer coordinates
 							
 
 
 				if move == "D":
+					# enter here if adventurer moves to one's right
 					if orientation == "S":
 						adventurer["orientation"] = "W"
 					elif orientation == "N":
@@ -115,6 +122,7 @@ class Map:
 						adventurer["orientation"] = "N"
 
 				if move == "G":
+					# enter here if adventurer moves to one's left
 					if orientation == "S":
 						adventurer["orientation"] = "E"
 					elif orientation == "N":
