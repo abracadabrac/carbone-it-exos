@@ -14,6 +14,7 @@ class Map:
 		self.dimensions = elements["C"]
 		self.mountainsList = elements["M"]
 		self.TreasuresList = elements["T"]
+		self.adventurersList = elements["A"]
 
 	@property
 	def _mapArray(self):
@@ -30,6 +31,12 @@ class Map:
 			else: 
 				mapArray[treasureCoord[1], treasureCoord[0]] =\
 				 int(mapArray[treasureCoord[1], treasureCoord[0]]) + 1
+
+		for adventurer in self.adventurersList:
+			adventurerCoords = adventurer["coords"]
+			print(adventurerCoords)
+			adventurerName = adventurer["name"]
+			mapArray[adventurerCoords[1], adventurerCoords[0]] = adventurerName[0]
 
 		return mapArray
 
