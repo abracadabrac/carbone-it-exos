@@ -2,7 +2,7 @@ def read_input_file(input_file_path):
 	"""
 	this function reads the input_file and returs a dictionary in the fallowing format
 	{
-	"C": [{<width's map>}, {<lenght's map>}],
+	"C": [<width's map>, <lenght's map>],
 	"M": [[<y0>, <x1>], ..., [<yi>, <xi>]],
 	"T": [[<y0>, <x1>], ..., [<yi>, <xi>]], 	# coords are duplicated if multiple treasures are present on it
 	"A": [{	'name': <name>, 

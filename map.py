@@ -24,10 +24,12 @@ class Map:
 		for mountainCoord in self.mountainsList:
 			self.mapArray[mountainCoord[1], mountainCoord[0]] = "M"
 
-		for treasure in self.TreasuresList:
-			treasureCoord = treasure[0:2]
-			treasureNb = treasure[1]
-			self.mapArray[treasureCoord[1], treasureCoord[0]] = str(treasureNb)
+		for treasureCoord in self.TreasuresList:
+			if self.mapArray[treasureCoord[1], treasureCoord[0]] == '.':
+				self.mapArray[treasureCoord[1], treasureCoord[0]] = 1
+			else: 
+				self.mapArray[treasureCoord[1], treasureCoord[0]] =\
+				 int(self.mapArray[treasureCoord[1], treasureCoord[0]]) + 1
 
 
 
